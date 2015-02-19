@@ -1,0 +1,28 @@
+buildscript {
+  repositories {
+    jcenter()
+    maven { url "http://clinker.netty.io/nexus/content/repositories/snapshots" }
+  }
+  dependencies {
+    classpath 'io.ratpack:ratpack-gradle:0.9.13'
+    classpath "com.github.jengelman.gradle.plugins:shadow:1.2.1"
+  }
+}
+
+apply plugin: 'idea'
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: 'io.ratpack.ratpack-groovy'
+
+repositories {
+  jcenter()
+  maven { url "http://clinker.netty.io/nexus/content/repositories/snapshots" }
+}
+
+dependencies {
+  compile ratpack.dependency("spring-boot")
+  compile ratpack.dependency("jackson")
+
+  testCompile "org.spockframework:spock-core:0.7-groovy-2.0", {
+    exclude module: "groovy-all"
+  }
+}

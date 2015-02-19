@@ -1,0 +1,9 @@
+*.class
+out/
+build/
+.gradle/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+*.log
