@@ -3,7 +3,9 @@ import app.User
 import app.UserService
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ApplicationContext
-import ratpack.jackson.JacksonModule
+
+import ratpack.exec.Blocking;
+
 
 import static ratpack.groovy.Groovy.ratpack
 import static ratpack.jackson.Jackson.fromJson
@@ -12,26 +14,23 @@ import static ratpack.spring.Spring.spring
 
 ratpack {
   bindings {
-    add(new JacksonModule())
     bindInstance(ApplicationContext, SpringApplication.run(SpringConfig))
   }
   handlers { ApplicationContext ctx ->
     register(spring(ctx))
 
-    prefix("user") {
-      handler { UserService userService ->
-        byMethod {
-          post {
-            def user = parse(fromJson(User))
-            blocking {
-              userService.save(user)
-            } then { User savedUser ->
-              render(json(savedUser))
-            }
-          }
-        }
+      post("user") { UserService userService ->
+          parse(fromJson(User)).then({ user ->
+              Blocking.get {
+                  userService.save(user)
+              } then { User savedUser ->
+                  render(json(savedUser))
+              }
+          })
       }
-    }
-    assets "assets"
+
+      fileSystem("assets") {
+          it.files()
+      }
   }
 }
